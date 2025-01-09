@@ -1,9 +1,14 @@
 import requests
 import json
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+# Загрузка переменных окружения из файла .env
+load_dotenv()
 
 def get_currency_rate(currency: str) -> float:
-    api_key = '7kyvJ00R8oAgUz1w64q5PsAJ9JTWm44c'  # Ваш новый API ключ
+    api_key = os.getenv('API_KEY')  # Получение API ключа из переменных окружения
     url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={currency.upper()}"
     headers = {
         "apikey": api_key
@@ -11,13 +16,13 @@ def get_currency_rate(currency: str) -> float:
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         data = response.json()
-        # print("API Response:", data)  # Добавьте эту строку для отладки
+        print("API Response:", data)  # Добавьте эту строку для отладки
         if 'rates' in data and 'RUB' in data['rates']:
             return round(data['rates']['RUB'], 2)
         else:
             raise ValueError("Курс валюты к рублю не найден")
     else:
-        # print("API Error Response:", response.text)  # Добавьте эту строку для отладки
+        print("API Error Response:", response.text)  # Добавьте эту строку для отладки
         raise ValueError("Ошибка при получении данных от API")
 
 def save_to_json(currency: str, rate: float):
